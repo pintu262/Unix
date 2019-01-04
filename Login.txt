@@ -1,0 +1,97 @@
+######### 1. LOGIN ###################
+#When We login in the UNIX System: 
+# 1. We enter login name and password
+# 2. The System looks for login name in the password file ( /etc/passwd )
+# 3. passwd file content:
+# 	(a). 7 colon-seperated fields
+#	(b). login name: encripted passwd: numeric User Id: numberic Group Id: a comment Field : home directory : shell program 
+#	     ( /bin/ksh )
+#	(c). sar:x:205:105:Stephen Rago:/home/sar:/bin/ksh
+
+
+######### 2. Shell #####################
+#A Shell is a command Line Interpretor which reads user input and execute Commands
+#Two Method to give the user input to Shell : 1. Terminal 2. Shell Script
+#Some Common Shells
+# 1. Bourne shell : /bin/sh 
+# 2. Bourne-again shell: /bin/bash
+# 3. C shell : /bin/csh
+# 4. Korn shell : /bin/ksh
+# 5. TENEX C shell : /bin/tcsh
+
+
+######### 3. Filename ####################
+# path and space
+# . current Dir
+# .. Parent Dir
+# file name restriction - (a-z: A-Z: 0-9:dot( . ):unserscore ( _ ): minus ( - ))
+# relative path name starts with slash (/) and absolute path name starts with the filename from the current directory
+# ( / ) is for root absolute path name
+
+######### 4. Command Help #################
+# man command_name
+# Will dispay the command related inforamtion
+
+########## 5. Reminder #####################
+# read about the header in the Appendix B
+
+########## 6. <dirent.h> ###################
+# opendir, readdir, closedir - function prototype is present 
+# opendir - return the pointer to a DIR structure
+# opendir returned pointer is passed to the readdir (in a loop to read Dir)
+# opendir - return the pointer to ' dirent ' or NULL when finished with the directory
+# dirent - structure is the name of each directory entry (d_name).
+# using name we can call the 'stat' function to determine the attribute of the dir
+# 'err_sys -(permission denied )or err_quit -(Not a dir)'
+# exit(num) - num can range from 0 to 255 : 0 means OK... argument beteen 1 to 255 means error occured
+
+#include "apue.h"
+#include <dirent.h>
+int
+main(int argc, char *argv[])
+{
+DIR *dp;
+struct dirent *dirp;
+if (argc != 2)
+err_quit("usage: ls directory_name");
+if ((dp = opendir(argv[1])) == NULL)
+err_sys("can’t open %s", argv[1]);
+while ((dirp = readdir(dp)) != NULL)
+printf("%s\n", dirp->d_name);
+closedir(dp);
+exit(0);
+}
+
+############ 7. File Descriptors #############
+# It is a small non-negative integers that the 'kernel' uses to identify the file access by the process.
+# Whenever file is open an existing file or create a new file- kernel returns the file descriptor: that is used when we want to read or write the file.
+
+# All shell opens three decriptor whenever a new program is run.
+# standard input, standard output, and standard error. 
+# If nothing special is done, all three is connected to the terminal :
+# example: pintu@pintu-dt$ ls
+# Most of the shell provide the way to redirect any or all the of the three decriptor to any file
+# example: pintu@pintu-dt$ ls > file.list
+
+# Unbuffered I/O
+# is provided by the function 'open, read, write,lseek and close'
+#
+# Example Program : willing to read from standard input and write to the standard output: - copies any regular file on a UNIX System
+# Program
+
+#include "apue.h"
+#define BUFFSIZE 4096
+int
+main(void)
+{
+	int n;
+	char buf[BUFFSIZE];
+	while ((n = read(STDIN_FILENO, buf,BUFFSIZE))> 0)
+	if (write(STDOUT_FILENO, buf, n) != n)
+		err_sys("write error");
+	if (n < 0)
+		err_sys("read error");
+	exit(0);
+}
+
+
